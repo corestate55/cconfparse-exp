@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
     # print-omit avoidance
     pd.set_option("display.width", 300)
-    pd.set_option("display.max_columns", 100)
-    pd.set_option("display.max_rows", 100)
+    pd.set_option("display.max_columns", 20)
+    pd.set_option("display.max_rows", 200)
 
     if args.file:
         print("# parse config = %s" % args.file, file=sys.stderr)
@@ -30,7 +30,5 @@ if __name__ == "__main__":
             print("# Table: ", file=sys.stderr)
             print(df)
     else:
-        print(
-            "Config file not specified",
-        )
+        print("Config file not specified", file=sys.stderr)
         sys.exit(1)

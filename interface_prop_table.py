@@ -22,14 +22,17 @@ class InterfacePropTableRecord:
 
     @property
     def interface(self):
+        """`hostname[interface]` format string"""
         return "%s[%s]" % (self._hostname(), self._intf_conf.re_match_typed(r".+\s+(.+)"))
 
     @property
     def switchport(self):
+        """True if switchport"""
         return self.switchport_mode != "NONE"
 
     @property
     def switchport_mode(self):
+        """switchport mode (ACCESS/TRUNK/NONE)"""
         mode = self._intf_conf.re_match_iter_typed(r"switchport\s+mode\s+(\w+)")
         if mode == "access":
             return "ACCESS"
@@ -39,15 +42,17 @@ class InterfacePropTableRecord:
 
     @property
     def access_vlan(self):
+        """Access vlan-id"""
         return self._intf_conf.re_match_iter_typed(r"switchport\s+access\s+vlan\s+(\d+)")
 
     @property
     def allowed_vlans(self):
+        """Trunk vlan-ids (e.g. "1,3,5-8" string)"""
         return self._intf_conf.re_match_iter_typed(r"switchport\s+trunk\s+allowed\s+vlan\s+(.+)")
 
     @property
     def channel_group(self):
-        """`Parent` channel interface name"""
+        """`Parent channel interface name of the interface"""
         if self._intf_conf.intf_in_portchannel:
             group_num_str = self._intf_conf.re_match_iter_typed(r"channel-group\s+(\d+)")
             return "Port-channel%s" % group_num_str
@@ -55,8 +60,10 @@ class InterfacePropTableRecord:
 
     @property
     def channel_group_members(self):
+        """Children interface name of the channel interface"""
         # method `is_portchannel_intf` does not works...
-        group_num_str = self._intf_conf.re_match_typed(r"^interface\s+Port-channel(\d+)")
+        group_re = re.compile(r"^interface\s+Port-channel(\d+)", re.IGNORECASE)
+        group_num_str = self._intf_conf.re_match_typed(group_re)
         if group_num_str:
             return list(
                 map(
@@ -68,7 +75,8 @@ class InterfacePropTableRecord:
 
     @property
     def primary_address(self):
-        ipv4_conf_re = re.compile(r"ip\s+address\s+(\S+\s+\S+)")
+        """IPv4 address of the interface"""
+        ipv4_conf_re = re.compile(r"ip(?:v4)?\s+address\s+(.+)$")
         if self._intf_conf.re_search_children(ipv4_conf_re):
             ipv4_obj = self._intf_conf.re_match_iter_typed(ipv4_conf_re, result_type=IPv4Obj)
             return ipv4_obj.as_cidr_addr
@@ -76,6 +84,7 @@ class InterfacePropTableRecord:
 
     @property
     def vrf(self):
+        """VRF name of the interface"""
         return self._intf_conf.re_match_iter_typed(r"ip\s+vrf\s+forwarding\s+(.+)") or "default"
 
 
@@ -89,6 +98,7 @@ class InterfacePropTable:
         self.records = self._records()
 
     def hostname(self):
+        """Hostname of the device (config file)"""
         return self.parser.re_match_iter_typed(r"^hostname\s+(.+)")
 
     def _records(self):
@@ -100,6 +110,7 @@ class InterfacePropTable:
         )
 
     def generate_dataframe(self):
+        """Generate interface properties table as a Dataframe"""
         cols = [
             "Interface",
             "Access_VLAN",

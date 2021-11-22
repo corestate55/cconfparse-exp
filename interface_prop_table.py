@@ -55,14 +55,17 @@ class InterfacePropTableRecord:
         """`Parent channel interface name of the interface"""
         if self._intf_conf.intf_in_portchannel:
             group_num_str = self._intf_conf.re_match_iter_typed(r"channel-group\s+(\d+)")
-            return "Port-channel%s" % group_num_str
+            # there is `Port-channel`/`Port-Channel` pattern
+            group_intf_re = re.compile(r"^interface (Port-channel%s)" % group_num_str, re.IGNORECASE)
+            return self._parser.re_match_iter_typed(group_intf_re)
         return ""
 
     @property
     def channel_group_members(self):
         """Children interface name of the channel interface"""
-        # method `is_portchannel_intf` does not works...
+        # enable ignore-case: accept: both `Port-channel` and `Port-Channel`
         group_re = re.compile(r"^interface\s+Port-channel(\d+)", re.IGNORECASE)
+        # method `is_portchannel_intf` does not works...
         group_num_str = self._intf_conf.re_match_typed(group_re)
         if group_num_str:
             return list(
@@ -76,6 +79,7 @@ class InterfacePropTableRecord:
     @property
     def primary_address(self):
         """IPv4 address of the interface"""
+        # accept  both`192.168.0.3 255.255.255.0` and `192.168.0.3/24`
         ipv4_conf_re = re.compile(r"ip(?:v4)?\s+address\s+(.+)$")
         if self._intf_conf.re_search_children(ipv4_conf_re):
             ipv4_obj = self._intf_conf.re_match_iter_typed(ipv4_conf_re, result_type=IPv4Obj)

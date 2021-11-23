@@ -14,12 +14,13 @@ class InterfacePropTableRecordBase(ABC):
     def __init__(self, parser, intf_conf):
         self._parser = parser  # CiscoConfigParse
         self._intf = intf_conf  # IOSCfgLine object of an interface
-        self._catalogue = {
+        # regexp catalogue
+        self._re = {
             "hostname_typed": re.compile(r"hostname\s+(.+)"),
         }
 
     def _hostname(self):
-        return self._parser.re_match_iter_typed(self._catalogue["hostname_typed"])
+        return self._parser.re_match_iter_typed(self._re["hostname_typed"])
 
     def _host_interface_str(self, interface_str):
         return "%s[%s]" % (self._hostname(), interface_str)

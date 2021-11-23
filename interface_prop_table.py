@@ -1,7 +1,6 @@
 """
 Generate interface prop table for a network device config
 """
-import re
 
 from ciscoconfparse import CiscoConfParse
 import pandas as pd
@@ -22,7 +21,7 @@ class InterfacePropTable:
     def hostname(self):
         """Hostname of the device (config file)"""
         # `hostname hoge` for ios, `host-name hoge;` for junos
-        hostname_re = r"host-?name\s+([^s;]+);?"
+        hostname_re = r"host-?name\s+([^\s;]+)"
         hostname_conf = self.parser.find_objects(hostname_re)[0]
         return hostname_conf.re_match_typed(hostname_re)
 

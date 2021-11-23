@@ -1,5 +1,6 @@
 """
 A record of interface property table (props of a interface)
+for Cisco IOS (-like config)
 """
 
 import re
@@ -7,7 +8,7 @@ from ciscoconfparse.ccp_util import IPv4Obj
 from interface_prop_table_record_base import InterfacePropTableRecordBase
 
 
-class InterfacePropTableRecord(InterfacePropTableRecordBase):
+class InterfacePropTableRecordForIOS(InterfacePropTableRecordBase):
     """
     Properties of a interface
     """
@@ -68,8 +69,9 @@ class InterfacePropTableRecord(InterfacePropTableRecordBase):
         if not group_num_str:
             return []
 
-        members = self._parser.find_objects_w_all_children(self._catalogue["interface_typed"],
-                                                           [self._catalogue["channel_group_func"](group_num_str)])
+        members = self._parser.find_objects_w_all_children(
+            self._catalogue["interface_typed"], [self._catalogue["channel_group_func"](group_num_str)]
+        )
         return list(map(lambda m: m.re_match_typed(self._catalogue["interface_typed"]), members))
 
     @property

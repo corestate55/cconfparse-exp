@@ -2,3 +2,13 @@
 
 # Maximum number of characters on a single line.
 max-line-length=120
+
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+# notes=FIXME, XXX, TODO # ignore these comments
+notes=
+
+[SIMILARITIES]
+# Ignore imports when computing similarities.
+ignore-imports=yes

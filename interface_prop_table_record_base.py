@@ -19,6 +19,7 @@ class InterfacePropTableRecordBase(ABC):
         # regexp catalogue
         self._re: dict = {
             "hostname_typed": re.compile(r"hostname\s+(.+)"),
+            "description_typed": re.compile(r"description\s+(.+)")
         }
 
     def _hostname(self) -> str:
@@ -45,6 +46,12 @@ class InterfacePropTableRecordBase(ABC):
         return "NONE"
 
     @property
+    def switchport_trunk_encapsulation(self) -> str:
+        """trunk encapsulation"""
+        # NOTE: only dot1q encap is used in this environment
+        return "DOT1Q" if self.switchport_mode == "TRUNK" else "NONE"
+
+    @property
     @abstractmethod
     def access_vlan(self) -> None | str:
         """Access vlan-id"""
@@ -59,7 +66,7 @@ class InterfacePropTableRecordBase(ABC):
     @property
     @abstractmethod
     def channel_group(self) -> None | str:
-        """`Parent channel interface name of the interface"""
+        """Parent channel interface name of the interface"""
         return None
 
     @property
@@ -67,6 +74,11 @@ class InterfacePropTableRecordBase(ABC):
     def channel_group_members(self) -> list:
         """Children interface name of the channel interface"""
         return []
+
+    @property
+    def description(self) -> str:
+        """interface description"""
+        return self._intf.re_match_iter_typed(self._re["description_typed"])
 
     @property
     @abstractmethod

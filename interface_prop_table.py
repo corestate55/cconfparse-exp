@@ -55,9 +55,11 @@ class InterfacePropTable:
             "Allowed_VLANs",
             "Channel_Group",
             "Channel_Group_Members",
+            "Description",
             "Primary_Address",
             "Switchport",
             "Switchport_mode",
+            "Switchport_Trunk_Encapsulation",
             "VRF",
         ]
         data = list(
